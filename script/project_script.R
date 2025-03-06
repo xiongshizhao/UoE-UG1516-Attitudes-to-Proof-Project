@@ -1,11 +1,11 @@
 # Install and load necessary libraries
-required_packages <- c("readxl", "stats")
+required_packages <- c("readxl", "writexl", "stats")
 new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
 if (length(new_packages)) install.packages(new_packages)
 lapply(required_packages, library, character.only = TRUE)
 
 
-# Data Importing and Preprocessing ----
+# Data Import and Preprocessing ----
 
 # Import the dataset
 rawdata <- read_excel("data/rawdata.xlsx")
@@ -16,14 +16,17 @@ rawdata_cleaned <- rawdata[, -c(2:12, 29)]
 # Filter rows where the second column is not "Neither" and the 15th column equals 4
 processed_data <- rawdata_cleaned[rawdata_cleaned[[2]] != "Neither" & rawdata_cleaned[[15]] == 4, -15]
 
-# Save the raw data and processed data to new CSV file
-write.csv(rawdata, "data/rawdata.xlsx", row.names = FALSE)
-write.csv(processed_data, "data/processed_data.xlsx", row.names = FALSE)
+# Save the raw data and processed data to CSV file
+write.csv(rawdata, "data/rawdata.csv", row.names = FALSE)
+write.csv(processed_data, "data/processed_data.csv", row.names = FALSE)
+
+# Save the processed data to Excel file
+write_xlsx(processed_data, "data/processed_data.xlsx")
 
 
 # Statistical Analysis: Normality Tests ----
 
-# Normality Test for Each Attitudes for Before and After Taking the ITP course
+# Normality Test for Each Attitude Before and After Taking the ITP Course
 # Combine the columns as specified
 processed_data$pre_anxiety <- processed_data[, 4] + processed_data[, 5]
 processed_data$pre_appreciation <- processed_data[, 6] + processed_data[, 7]
@@ -32,7 +35,6 @@ processed_data$post_anxiety <- processed_data[, 10] + processed_data[, 11]
 processed_data$post_appreciation <- processed_data[, 12] + processed_data[, 13]
 processed_data$post_self_efficacy <- processed_data[, 14] + processed_data[, 15]
 
-# Select the newly created combined columns
 combined_columns <- processed_data[, c("pre_anxiety", "pre_appreciation", "pre_self_efficacy", 
                                        "post_anxiety", "post_appreciation", "post_self_efficacy")]
 
@@ -46,8 +48,8 @@ for (i in 1:length(shapiro_results)) {
 }
 
 
-# Normality Test for Each Attituds across Pre-University Education
-# Create a new column 'education_type' based on the original column
+# Normality Test for Each Attitude across Pre-University Education
+# Create a new column `education_type`
 processed_data$education_type <- as.character(processed_data$`What is the highest level of maths you did before University?`)
 
 # Combine all categories except "A level Further Maths" and "Advanced Higher Maths" into "Other"
@@ -72,6 +74,7 @@ for (education in education_types) {
     
     shapiro_result <- shapiro.test(column_data)
     
+    # Print w statistics and p-values
     cat(col, "\n")
     cat("    w statistic:", shapiro_result$statistic, "\n")
     cat("    p-value:", shapiro_result$p.value, "\n\n")
@@ -79,7 +82,7 @@ for (education in education_types) {
 }
 
 
-# Normality Test for Each Attitudes for Before and After taking both PPS and APPS course
+# Normality Test for Each Attitude Before and After Taking Both PPS and APPS Courses
 # List the course types
 course_types <- unique(processed_data$`Did you take Proofs and Problem Solving (PPS), Accelerated Proofs and Problem Solving (APPS) or neither?`)
 
@@ -91,20 +94,17 @@ for (course in course_types) {
   for (col in c("pre_anxiety", "pre_appreciation", "pre_self_efficacy", 
                 "post_anxiety", "post_appreciation", "post_self_efficacy")) {
     
-    # Check if the column is a list, if so unlist and convert to numeric
     column_data <- course_data[[col]]
     
-    # If it's a list, unlist it and convert to numeric
     if (is.list(column_data)) {
       column_data <- as.numeric(unlist(column_data))
     } else {
       column_data <- as.numeric(column_data)
     }
-    
-    # Apply the Shapiro-Wilk test
+
     shapiro_result <- shapiro.test(column_data)
     
-    # Print W statistic and p-value
+    # Print w statistics and p-values
     cat(col, "\n")
     cat("    w statistic:", shapiro_result$statistic, "\n")
     cat("    p-value:", shapiro_result$p.value, "\n\n")
@@ -117,7 +117,7 @@ for (course in course_types) {
 # Select the columns pre_anxiety, pre_appreciation, pre_self_efficacy
 kruskal_columns <- processed_data[, c("pre_anxiety", "pre_appreciation", "pre_self_efficacy")]
 
-# Perform Kruskal-Wallis test for each of these columns based on 'education_type'
+# Perform Kruskal-Wallis test for each of these columns based on `education_type`
 kruskal_results <- apply(kruskal_columns, 2, function(x) kruskal.test(x ~ processed_data$education_type))
 
 # Print the Kruskal-Wallis test results (chi-squared statistic and p-value)
@@ -148,7 +148,6 @@ for (comparison in comparisons) {
   pre_data <- valid_data[[pre_col]]
   post_data <- valid_data[[post_col]]
   
-  # If the data is still in a list format, unlist it and convert to numeric
   if (is.list(pre_data)) {
     pre_data <- as.numeric(unlist(pre_data))
   } else {
@@ -161,7 +160,6 @@ for (comparison in comparisons) {
     post_data <- as.numeric(post_data)
   }
   
-  # Apply the Wilcoxon Signed-Rank test for the pair
   wilcox_result <- wilcox.test(pre_data, post_data, paired = TRUE)
   
   # Print results
@@ -179,8 +177,6 @@ for (comparison in comparisons) {
 
 
 # Supplemental Question in Research Question 2 ----
-processed_data <- processed_data[, -3]
-
 # Split the data into two subsets based on whether the entry is "PPS" or "APPS"
 pps_data <- processed_data[processed_data$`Did you take Proofs and Problem Solving (PPS), Accelerated Proofs and Problem Solving (APPS) or neither?` == "PPS", ]
 apps_data <- processed_data[processed_data$`Did you take Proofs and Problem Solving (PPS), Accelerated Proofs and Problem Solving (APPS) or neither?` == "APPS", ]
@@ -190,7 +186,7 @@ write.csv(pps_data, "data/pps_data.xlsx", row.names = FALSE)
 write.csv(apps_data, "data/apps_data.xlsx", row.names = FALSE)
 
 
-# Comparing Each Attitudes Before and After taking both PPS and APPS course Using Mann Whitney U Test
+# Comparing Each Attitude Before and After Taking Both PPS and APPS Courses Using the Mann-Whitney U Test
 # List of variables to test
 variables <- c("pre_anxiety", "pre_appreciation", "pre_self_efficacy", 
                "post_anxiety", "post_appreciation", "post_self_efficacy")
@@ -204,17 +200,17 @@ for (var in variables) {
   # Perform the Mann-Whitney U test (Wilcoxon rank-sum test)
   mann_whitney_result <- wilcox.test(pps_data[[var]], apps_data[[var]], alternative = "two.sided")
   
-  # Display the result of the test
+  # print the results
   print(paste("Results for", var))
   print(mann_whitney_result)}
 
 
-# Comparing Each Attitudes Before Taking PPS course using Wilcoxon Signed Rank Test
+# Comparing Each Attitude Before Taking the PPS Course Using the Wilcoxon Signed-Rank Test
 # Define column groups for pre and post data
 column_groups <- list(
-  list(pre = c(3, 4), post = c(9, 10), name = "anxiety"),
-  list(pre = c(5, 6), post = c(11, 12), name = "appreciation"),
-  list(pre = c(7, 8), post = c(13, 14), name = "self_efficacy")
+  list(pre = c(4, 5), post = c(10, 11), name = "anxiety"),
+  list(pre = c(6, 7), post = c(12, 13), name = "appreciation"),
+  list(pre = c(8, 9), post = c(14, 15), name = "self_efficacy")
 )
 
 # Loop through each column group
@@ -230,30 +226,30 @@ for (group in column_groups) {
   # Perform the Wilcoxon Signed Rank test for paired data (pre vs post)
   wilcoxon_result <- wilcox.test(pre_data, post_data, paired = TRUE, alternative = "two.sided")
   
-  # Display the result of the test
+  # print the results
   print(paste("Wilcoxon Signed Rank test results for", group$name))
   print(wilcoxon_result)
 }
 
 
-# Comparing Appreciation Change over taking APPS Course Using Wilcoxon Signed Rank Test
+# Comparing the Change in Appreciation After Taking the APPS Course Using the Wilcoxon Signed-Rank Test
 # Access the data inside these columns correctly and convert them to numeric
-apps_data$pre_appreciation <- as.numeric(as.character(apps_data[[5]])) + as.numeric(as.character(apps_data[[6]]))
-apps_data$post_appreciation <- as.numeric(as.character(apps_data[[11]])) + as.numeric(as.character(apps_data[[12]]))
+apps_data$pre_appreciation <- as.numeric(as.character(apps_data[[6]])) + as.numeric(as.character(apps_data[[7]]))
+apps_data$post_appreciation <- as.numeric(as.character(apps_data[[12]])) + as.numeric(as.character(apps_data[[13]]))
 
-# Now perform the Wilcoxon Signed Rank test for paired data (pre vs post)
+# Perform the Wilcoxon Signed Rank test for paired data (pre vs post)
 wilcoxon_result <- wilcox.test(apps_data$pre_appreciation, apps_data$post_appreciation, paired = TRUE, alternative = "two.sided")
 
-# Display the result of the test
+# print the results
 print(wilcoxon_result)
 
-# Comparing `Anxiety` and `Self_Efficacy` Change over taking APPS Course Using Paired T Test
+# Comparing the Changes in Anxiety and Self-Efficacy After Taking the APPS Course Using the Paired T-Test
 # Ensure the relevant columns are numeric
-apps_data$pre_anxiety <- as.numeric(as.character(apps_data[[3]])) + as.numeric(as.character(apps_data[[4]]))
-apps_data$post_anxiety <- as.numeric(as.character(apps_data[[9]])) + as.numeric(as.character(apps_data[[10]]))
+apps_data$pre_anxiety <- as.numeric(as.character(apps_data[[4]])) + as.numeric(as.character(apps_data[[5]]))
+apps_data$post_anxiety <- as.numeric(as.character(apps_data[[10]])) + as.numeric(as.character(apps_data[[11]]))
 
-apps_data$pre_self_efficacy <- as.numeric(as.character(apps_data[[7]])) + as.numeric(as.character(apps_data[[8]]))
-apps_data$post_self_efficacy <- as.numeric(as.character(apps_data[[13]])) + as.numeric(as.character(apps_data[[14]]))
+apps_data$pre_self_efficacy <- as.numeric(as.character(apps_data[[8]])) + as.numeric(as.character(apps_data[[9]]))
+apps_data$post_self_efficacy <- as.numeric(as.character(apps_data[[14]])) + as.numeric(as.character(apps_data[[15]]))
 
 # Perform the paired t-test for pre_anxiety vs post_anxiety
 t_test_anxiety <- t.test(apps_data$pre_anxiety, apps_data$post_anxiety, paired = TRUE)
