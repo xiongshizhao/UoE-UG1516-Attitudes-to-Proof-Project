@@ -1,15 +1,22 @@
 # UoE-UG1516-Attitudes-to-Proof-Project
 
 ### Students:
-- Aleyna Kartal (a.kartal@sms.ed.ac.uk)  
-- Ben Kauffmann (b.e.kauffmann@sms.ed.ac.uk)  
-- Calum Duffus-Hodson (c.duffus-hodson@sms.ed.ac.uk)  
-- Shizhao Xiong (s.xiong-8@sms.ed.ac.uk)  
-- Yefeng Wang (y.wang-634@sms.ed.ac.uk)  
+- Aleyna Kartal  
+  Email: [a.kartal@sms.ed.ac.uk](mailto:a.kartal@sms.ed.ac.uk)
+- Ben Kauffmann  
+  Email: [b.e.kauffmann@sms.ed.ac.uk](mailto:b.e.kauffmann@sms.ed.ac.uk)
+- Calum Duffus-Hodson  
+  Email: [c.duffus-hodson@sms.ed.ac.uk](mailto:c.duffus-hodson@sms.ed.ac.uk)
+- Shizhao Xiong  
+  Email: [s.xiong-8@sms.ed.ac.uk](mailto:s.xiong-8@sms.ed.ac.uk)
+- Yefeng Wang  
+  Email: [y.wang-634@sms.ed.ac.uk](mailto:y.wang-634@sms.ed.ac.uk)
 
 ### Supervisors:
-- Wei En Tan (Lecturer, University of Edinburgh)  
-- Robbie Bickerton (Lecturer, University of Edinburgh)
+- Wei En Tan, Lecturer at the University of Edinburgh  
+  Email: [w.tan@ed.ac.uk](mailto:w.tan@ed.ac.uk)
+- Robbie Bickerton, Lecturer at the University of Edinburgh  
+  Email: [r.bickerton@ed.ac.uk](mailto:r.bickerton@ed.ac.uk)
 
 ---
 
