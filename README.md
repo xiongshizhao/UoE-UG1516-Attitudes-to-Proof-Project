@@ -25,7 +25,7 @@ The purpose of this study is to explore the impact of an introduction to proof c
 
 ### Data and Code Access
 
-- The data used for this research and figure production can be found [here](https://github.com/xiongshizhao/UoE-UG1516-Attitudes-to-Proof-Project/tree/main/data).
+- The raw and processed data used for this research can be found [here](https://github.com/xiongshizhao/UoE-UG1516-Attitudes-to-Proof-Project/tree/main/data).
 
 - The R script for analysis can be found [here](https://github.com/xiongshizhao/UoE-UG1516-Attitudes-to-Proof-Project/tree/main/script).
 
